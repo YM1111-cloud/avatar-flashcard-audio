@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>アバター 和訳ガイド フラッシュカード</title>
+ <style>
+ body {
+ font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+ background-color: #f7f9fc;
+ color: #333333;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ padding: 20px;
+ margin: 0;
+ }
+
+ h1 {
+ font-size: 1.5rem;
+ color: #2c3e50;
+ margin-bottom: 10px;
+ }
+
+ .global-controls {
+ display: flex;
+ gap: 10px;
+ width: 100%;
+ max-width: 600px;
+ justify-content: space-between;
+ margin-bottom: 15px;
+ }
+
+ .global-btn {
+ flex: 1;
+ padding: 10px;
+ font-size: 0.95rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ background-color: #edf2f7;
+ color: #2d3748;
+ transition: background-color 0.2s;
+ box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+ }
+
+ .global-btn:hover {
+ background-color: #e2e8f0;
+ }
+
+ .header-stats {
+ display: flex;
+ justify-content: space-between;
+ width: 100%;
+ max-width: 600px;
+ margin-bottom: 15px;
+ font-size: 1.1rem;
+ font-weight: bold;
+ color: #555;
+ padding: 0 10px;
+ }
+
+ #flashcard {
+ background-color: #ffffff;
+ width: 100%;
+ max-width: 600px;
+ min-height: 400px;
+ border-radius: 16px;
+ box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ padding: 30px;
+ box-sizing: border-box;
+ text-align: center;
+ position: relative;
+ }
+
+ #front-side {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ width: 100%;
+ height: 100%;
+ }
+
+ #play-audio-btn {
+ font-size: 4rem;
+ padding: 30px;
+ border-radius: 50%;
+ background-color: #4a90e2;
+ color: white;
+ border: none;
+ cursor: pointer;
+ box-shadow: 0 6px 12px rgba(74, 144, 226, 0.3);
+ transition: transform 0.1s, background-color 0.2s;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ width: 120px;
+ height: 120px;
+ margin-bottom: 15px;
+ }
+
+ #play-audio-btn:active {
+ transform: scale(0.95);
+ background-color: #357abd;
+ }
+ 
+.hint-text {
+ color: #888;
+ font-size: 0.9rem;
+ margin-bottom: 25px;
+ }
+
+ .last-date-badge {
+ background-color: #f0f4f8;
+ color: #4a5568;
+ padding: 8px 16px;
+ border-radius: 20px;
+ font-size: 0.85rem;
+ font-weight: bold;
+ border: 1px solid #e2e8f0;
+ }
+
+ #back-side {
+ display: none;
+ width: 100%;
+ text-align: left;
+ }
+
+ .english-text {
+ font-size: 1.4rem;
+ font-weight: bold;
+ color: #1a1a1a;
+ margin-bottom: 15px;
+ border-bottom: 2px solid #e1e8ed;
+ padding-bottom: 10px;
+ }
+
+ .japanese-text {
+ font-size: 1.1rem;
+ color: #4a4a4a;
+ margin-bottom: 20px;
+ line-height: 1.6;
+ }
+
+ .note-box {
+ background-color: #fff9e6;
+ border-left: 4px solid #f5a623;
+ padding: 15px;
+ border-radius: 4px;
+ font-size: 1rem;
+ line-height: 1.6;
+ color: #5c4716;
+ }
+
+ .controls {
+ display: flex;
+ gap: 10px;
+ margin-top: 30px;
+ width: 100%;
+ max-width: 600px;
+ justify-content: center;
+ }
+
+ .action-btn {
+ flex: 1;
+ padding: 15px 10px;
+ font-size: 1rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ transition: background-color 0.2s, opacity 0.2s;
+ }
+
+ .action-btn:disabled {
+ opacity: 0.5;
+ cursor: not-allowed;
+ }
+
+ #prev-btn { background-color: #e2e8f0; color: #4a5568; }
+ #flip-btn { background-color: #4a90e2; color: white; }
+ #next-btn { background-color: #e2e8f0; color: #4a5568; }
+
+ .eval-btn {
+ flex: 1;
+ padding: 15px 10px;
+ font-size: 1.2rem;
+ border: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-weight: bold;
+ color: white;
+ }
+
+ #wrong-btn { background-color: #e74c3c; }
+ #wrong-btn:hover { background-color: #c0392b; }
+ 
+#correct-btn { background-color: #2ecc71; }
+ #correct-btn:hover { background-color: #27ae60; }
+ </style>
+</head>
+<body>
+
+ <h1>🎧 アバター 和訳ガイド</h1>
+
+ <div class="global-controls">
+ <button id="mode-btn" class="global-btn" onclick="toggleFilterMode()">全問モード中 (タップで未正解のみ)</button>
+ <button id="first-btn" class="global-btn" onclick="goToFirst()">⏮ 1問目に戻る</button>
+ </div>
+
+ <div class="header-stats">
+ <span id="progress-text">1 / 115</span>
+ <span id="score-text">正解数: 0</span>
+ </div>
+
+ <div id="flashcard">
+ <div id="front-side">
+ <button id="play-audio-btn">▶️</button>
+ <p class="hint-text">タップして英語の音声を聴く</p>
+ <div class="last-date-badge" id="last-date-text">最終回答日: 未回答</div>
+ </div>
+
+ <div id="back-side">
+ <div class="english-text" id="eng-content"></div>
+ <div class="japanese-text" id="jap-content"></div>
+ <div class="note-box" id="note-content"></div>
+ </div>
+ </div>
+
+ <div class="controls" id="controls-front">
+ <button id="prev-btn" class="action-btn" onclick="prevCard()">◀ 前へ</button>
+ <button id="flip-btn" class="action-btn" onclick="flipCard()">🔄 裏返す</button>
+ <button id="next-btn" class="action-btn" onclick="nextCard()">次へ ▶</button>
+ </div>
+
+ <div class="controls" id="controls-back" style="display: none;">
+ <button id="wrong-btn" class="eval-btn" onclick="markIncorrect()">❌ 覚えてない</button>
+ <button id="correct-btn" class="eval-btn" onclick="markCorrect()">◯ 完璧！</button>
+ </div>
+
+ <script>
+ const cardsData = [{"en": "Water. Earth. Fire. Air.", "jp": "水。土。火。気。", "note": "アバターの世界を構成する4つのエレメント（自然要素）。"}, {"en": "My grandmother used to tell me stories about the old days, a time of peace.", "jp": "昔は平和な時代だったと、おばあちゃんがよく話してくれた。", "note": "used to + 動詞の原形 は「（かつては）よく〜したものだ（今はそうではない）」という、過去の対比を伴う中級必須の重要表現。"}, {"en": "The Avatar kept balance between the Water Tribes, Earth Kingdom, Fire Nation, and Air Nomads.", "jp": "アバターは、水気部族、土の王国、火の国、そして気の民の間の均衡（バランス）を保っていた。", "note": "keep balance は「均衡を保つ」。4つの国（部族）の名前を対等に並べています。"}, {"en": "But that all changed when the Fire Nation attacked.", "jp": "だが、火の国が攻撃を仕掛けてきたとき、すべてが変わってしまった。", "note": "But that all changed when... は物語の転換点を表すドラマチックな定番フレーズ。"}, {"en": "Only the Avatar mastered all four elements and could stop the ruthless Firebenders.", "jp": "4つのエレメントすべてをマスターし、冷酷な火のベンダーたちを止められるのはアバターだけだった。", "note": "master（動詞：〜を習得する、極める）と ruthless（形容詞：無慈悲な、冷酷な）は中級の重要語彙。"}, {"en": "But when the world needed him most, he vanished.", "jp": "しかし、世界が最も彼を必要としたとき、彼は姿を消した。", "note": "vanish は「（突然・完全に）消え去る」という意味。disappear よりもドラマチックな響き。"}, {"en": "A hundred years have passed and the Fire Nation is nearing victory.", "jp": "100年が経過し、火の国は勝利を目前にしている。", "note": "near が現在分詞（nearing）として「（勝利や目的地に）近づいている、あと少しである」という動詞として使われています。"}, {"en": "My father and the men of my tribe journeyed to the Earth Kingdom to help fight the war, leaving me and my brother to head of our tribe.", "jp": "私の父と、部族の男たちは戦争を支援するために土の王国へと旅立ち、私と兄に部族の留守を託した。", "note": "leaving A to B は「AをBという状態のまま残す」という分詞構文。ここでは「部族の統率（head）をカタラたちに残した」というニュアンス。"}, {"en": "Some people believe that the Avatar was never reborn into the Air Nomads and that the cycle is broken,", "jp": "アバターは二度と気の民に生まれ変わる（転生する）ことはなく、転生サイクルは途切れてしまったと信じる人々もいるが、", "note": "reborn（転生した）と the cycle is broken（サイクル・連鎖が断ち切られた）はアバターの輪廻転生システムを説明する重要表現。"}, {"en": "but I haven't lost hope. I still believe that somehow, the Avatar will return to save the world.", "jp": "それでも私は希望を失ってはいない。今でもどうにかして、世界を救うためにアバターが帰ってくると信じている。", "note": "somehow は「どうにかして、何とかして」。諦めない強い意思を感じさせる表現です。"}, {"en": "It's not getting away from me this time. Watch and learn.", "jp": "今回は絶対に逃がさないぞ。よく見て勉強しな。", "note": "get away は「逃げる」。Watch and learn は「（俺の素晴らしいお手本を）見て学びなさい」というドヤ顔フレーズ。"}, {"en": "This is how you catch a fish.", "jp": "魚ってのはこうやって捕るんだよ。", "note": "This is how you... は「〜はこうやってやるんだ」という手順を示す代表的な口語表現。"}, {"en": "Sokka, look!", "jp": "ソッカ、見て！", "note": "カタラが背後にいる魚（水曲げで浮かせている）に気づいて興奮しています。"}, {"en": "Shhh! Katara, you're gonna scare it away.", "jp": "シーッ！ カタラ、声を出すと魚が驚いて逃げちゃうだろ。", "note": "scare away は「怖がらせて追い払う、逃がす」。"}, {"en": "- I can already smell it cooking. - But, Sokka, I caught one!", "jp": "- （ソッカ）もう魚が焼けるいい匂いが頭の中でしてきてるんだ。 - （カタラ）でもソッカ、私捕まえたのよ！", "note": "ソッカはまだ捕まえてもいないのに妄想しています。カタラは水曲げで実際に魚を宙に浮かせています。"}, {"en": "Hey!", "jp": "うわっ！", "note": "カタラがコントロールを失った水球が破裂し、ソッカの頭に水がかかります。"}, {"en": "Why is it that every time you play with Magic Water, I get soaked?", "jp": "どうしてお前がその『魔法の水』で遊ぶたびに、俺がびしょ濡れ（ずぶ濡れ）になるんだよ？", "note": "Why is it that... は「一体全体どうして〜なのか？」という不満や疑問を表す強調表現。get soaked は「びしょ濡れになる」。"}, {"en": "It's not magic, it's waterbending. And it's--", "jp": "魔法じゃないわ、ウォーターベンディング（水曲げ）よ。それに、これは…", "note": "カタラは自分の能力に誇りを持っています。ソッカがそれを「魔法」とからかうのが気に入りません。"}, {"en": "Yeah! An ancient art, unique to our culture, blah blah blah.", "jp": "はいはい！『我が文化に固有の古の芸術』、とか何とかだろ。", "note": "unique to... は「〜に固有の」。blah blah blah は「その他もろもろ、なんちゃらかんちゃら」と、相手の言い訳や説明を馬鹿にして遮る定番フレーズ。"}, {"en": "Look, if I had real powers, I'd keep my weirdness to myself.", "jp": "いいか、もし俺に本物の超能力があったとしても、そんな変な力（weirdness）は自分の胸の内にしまっておくね。", "note": "keep ... to oneself は「他人に言わない、自分の秘密にしておく」という超重要イディオム。"}, {"en": "You're calling me weird? I'm not the one who makes muscles at myself everytime I see my reflection in the water.", "jp": "私を変人扱いするの？ 水面に自分の姿が映るたびに、筋肉モリモリのポーズをきめて見せびらかしてるのは、私じゃないわよ。", "note": "make muscles は筋肉を誇示するポーズを取ること。reflection は「（水面や鏡への）映り込み」。ソッカのナルシストぶりを突くカタラの見事なカウンター。"}, {"en": "- Watch out! - Go left! Go left!", "jp": "- （ソッカ）気をつけろ！ - （カタラ）左に行って！左！", "note": "カヌーが激しい流氷の隙間に挟まれそうになっています。"}, {"en": "You call that left?", "jp": "今ののどこが左なのよ？！", "note": "You call that A? は「お前はあれをAと呼ぶのか？（全然Aじゃないだろ）」という強い不満や皮肉を含む重要構文。"}, {"en": "- Don't like my steering? You should have waterbended us out of the ice. - So it's my fault?", "jp": "- （ソッカ）俺の操縦が気に入らないか？ だったらお前の水曲げで氷の外へ脱出させてくれればよかっただろ。 - （カタラ）じゃあ、私のせいだって言うの？", "note": "steering は舵取り・操縦。ソッカはカタラの水曲げを馬鹿にしつつも、都合の良い時だけアテにしようとする皮肉な態度をとっています。"}, {"en": "I should have left you home. Leave it to a girl to screw things up.", "jp": "お前なんか家に置いてくるべきだったな。これだから女に任せると物事を台無しにされるんだよ。", "note": "I should have + 過去分詞 は「〜すべきだった（のにしなかった）」という後悔・非難表現。Leave it to A to do は「（皮肉を込めて）さすがAだ、これだからAに任せると〜する」という決まり文句。screw up は「台無しにする」。非常に男尊女卑（sexist）な発言です。"}, {"en": "You are the most sexist, immature, nut-brained...", "jp": "あんたは本当に、最低の性差別主義者で、ガキで、ナッツ並みの脳みそで…", "note": "カタラが完全にキレています。sexist（性差別者）、immature（未熟な、ガキな）、nut-brained（極めて愚かな、脳が木の実サイズしかない）と罵倒語のオンパレード。"}, {"en": "I'm embarrassed to be related to you.", "jp": "あんたときょうだい（親戚）だなんて、恥ずかしくてたまらないわ！", "note": "be embarrassed to...（〜することが恥ずかしい）。きょうだいゲンカの極みの一言。"}, {"en": "Since mom died, I've been doing all the work, while you've been off playing soldier.", "jp": "お母さんが亡くなってから、私は家の仕事を全部やってるのよ！ あんたが外で兵隊ごっこをして遊んでる間にね！", "note": "while you've been off playing soldier は「あんたが（責任逃れをして）外で兵士のふりをして遊んでいる間」。be off -ing は「（本来の義務を放棄して）〜しに行っている、〜して遊んでいる」。"}, {"en": "- Katara. - I even wash all the clothes! Have you ever smelled your dirty socks? Let me tell you, not pleasant!", "jp": "- （ソッカ）カタラ…（焦り出す） - （カタラ）あんたの服も全部洗ってる！ 自分の汚い靴下の匂いを嗅いだことある？！ 言っとくけど、めちゃくちゃ臭いんだから！", "note": "カタラの怒り（感情）が高まるにつれて、彼女の無意識のウォーターベンディングが背後の巨大な氷山をピキピキと破壊し始めています。ソッカはそれに気づいてカタラをなだめようとしますが、カタラは止まりません。"}, {"en": "- Settle down! - No, that's it. I'm done helping you! From now on, you're on your own!", "jp": "- （ソッカ）落ち着けって！ - （カタラ）いいえ、もう限界よ。これであんたの手伝いはおしまい！ これからは一人で勝手にやりなさい！", "note": "Settle down は「落ち着く、静まる」。I'm done -ing は「〜するのはもう終わりだ、うんざりだ」。be on one's own は「一人で、自分の力でやっていく」。カタラが放った最後の感情の爆発で、背後の氷山が真っ二つに割れます。"}, {"en": "- Okay, you've gone from weird to freakish, Katara. - You mean, I did that? - Yep, congratulations!", "jp": "- （ソッカ）よし、カタラ。お前はただの変人（weird）から、本物の化物（freakish）に進化したな。 - （カタラ）それって…私がやったの？ - （ソッカ）そうだよ、おめでとう！", "note": "go from A to B は「AからBへと移行する（悪化する）」。freakish は「化物じみた、異常な」。ソッカは呆れと恐怖混じりで皮肉の congratulations!（おめでとう）を言っています。"}, {"en": "- He's alive! We have to help. - Katara, get back here! We don't know what that thing is.", "jp": "- （カタラ）生きてるわ！ 助けなきゃ。 - （ソッカ）カタラ、戻れ！ それが何者（どんな化物）か分かんないだろ！", "note": "割れた氷の中から光り輝く少年（アング）が現れ、カタラが助けに行こうとします。警戒心の強いソッカは、妹を止めようとしています。get back here（ここに戻れ）は命令形。"}, {"en": "- Finally! - Uncle, do you realize what this means? - I won't get to finish my game?", "jp": "- （ズコ）ついに（見つけたぞ）！ - 叔父上、これがどういう意味か分かりますか？ - （アイロー）わしのゲーム（パイ・ショウ）を最後まで遊べなくなる、ということかね？", "note": "アングが目覚めた時の巨大な光の柱を遠くの船から目撃したズコ王子。won't get to do は「〜する機会が得られないだろう、〜できなくなってしまう」という口語表現。"}, {"en": "It means my search... it's about to come to an end.", "jp": "私の捜索（アバター探しの旅）が…もうすぐ終わりを迎える、という意味です。", "note": "be about to do は「まさに〜しようとしている、〜するところだ」。come to an end は「終わりを迎える、終結する」。"}, {"en": "- That light came from an incredibly powerful source. It has to be him. - It's just the celestial lights. We've been down this road before, Prince Zuko.", "jp": "- （ズコ）あの光は、信じられないほど強力な源から放たれた。彼（アバター）に違いありません。 - （アイロー）ただの極光（天の光）じゃよ。前にもこういうことはあった（同じ道を歩んだ）ではないか、ズコ王子。", "note": "It has to be... は「〜に違いない（強い確信）」。been down this road before は「以前にもこの状況を経験した、同じ過ちや無駄足を経験した」という中級の非常に役立つ比喩表現。"}, {"en": "I don't want you to get too excited, over nothing. Please, sit.", "jp": "何でもないこと（徒労）に対して、お前にあまり期待（興奮）しすぎてほしくないんじゃ。さあ、座りなさい。", "note": "I don't want you to do は「お前に〜してほしくない（ソフトな要望・忠告）」。over nothing は「何でもないことに対して」。"}, {"en": "Why don't you enjoy a cup of calming jasmine tea?", "jp": "心を落ち着かせるジャスミン茶でも一杯、楽しんだらどうじゃ？", "note": "Why don't you + 動詞の原形? は「〜したらどうですか？」という提案。アイローののんびりした性格と、ズコの焦燥感のコントラストが描かれています。"}, {"en": "I don't need any calming tea! I need to capture the Avatar.", "jp": "落ち着くお茶など必要ない！ 私はアバターを捕らえる必要があるのだ！", "note": "叔父ののんきな提案を、ズコが怒鳴りつけて一蹴するシーン。"}, {"en": "Headsman, head a course for the light.", "jp": "操舵手、光の方向へ進路を取れ！", "note": "head a course for... は「〜に向けて進路を取る、進む」。"}, {"en": "Stop it!", "jp": "やめて！（ソッカ、槍を向けないで！）", "note": "目覚めたアングに対して、ソッカが警戒して槍を突き出しているのをカタラが制止します。"}, {"en": "- I need to ask you something. - What? - Please, come closer. - What is it?", "jp": "- （アング）君にちょっと聞きたいことがあるんだ。 - （カタラ）何？ - （アング）お願い、もっと近くに来て。 - （カタラ）何かしら？", "note": "アングは弱々しい声でカタラを呼び寄せます。何か重大な秘密でもあるかのような引き込み方です。"}, {"en": "- Will you go penguin sledding with me? - Sure... I guess.", "jp": "- （アング）僕と一緒にペンギン・スライディング（ペンギン滑り）に行かない？ - （カタラ）ええ…いいけど（困惑）。", "note": "シリアスな雰囲気から一転、超子供っぽくて無邪気な質問を投げかけるアング。カタラは面食らっています。"}, {"en": "- What's going on here? - You tell us! How did you get in the ice, and why aren't you frozen?", "jp": "- （アング）ここで一体何が起きてるの？ - （ソッカ）こっちのセリフだ（お前が俺たちに言え）！ どうやって氷の中に入ったんだ、そして何で凍りついてないんだよ？", "note": "What's going on here? は「ここで何が起きてるんだ？」。ソッカの You tell us! は「お前が俺たちに教えろ！」という強い返し。"}, {"en": "I'm not sure.", "jp": "よく分からないんだ。", "note": "アング自身、100年間氷の中にいたという自覚がまだありません。"}, {"en": "Appa! Are you alright? Wake up, buddy.", "jp": "アッパ！ 大丈夫？ 起きて、相棒。", "note": "氷の底に倒れている巨大な獣（アッパ）を発見し、駆け寄るアング。buddy は親しい男性の友人や、ペットなどにかける親しみを込めた呼びかけ。"}, {"en": "You're okay!", "jp": "よかった、無事だね！", "note": "アッパが目を覚まして大きな舌でアングを舐め回し、アングが喜んでいます。"}, {"en": "- What is that thing? - This is Appa, my flying bison.", "jp": "- （ソッカ）何だあの怪物は？！ - （アング）この子はアッパ、僕の空飛ぶバイソン（野牛）だよ。", "note": "ソッカは巨大なアッパを見て怯えています。"}, {"en": "Right! And this is Katara, my flying sister.", "jp": "はいはい、そりゃそうだ！ で、こっちにいるのが俺の「空飛ぶ妹」のカタラだよ。", "note": "ソッカの強烈な皮肉。「バイソンが飛ぶわけないだろ、嘘をつくな」という不信感を、あり得ない設定（空飛ぶ妹）を並べることで表現しています。"}, {"en": "Don't worry, it'll wash out.", "jp": "大丈夫、洗えば落ちるよ。", "note": "アッパが巨大なくしゃみをして、ソッカに大量の鼻水を浴びせます。アングは笑いながら「（服についた鼻水は）洗えば落ちるよ」と慰めて（？）います。wash out は「（汚れなどが）洗って落ちる」。"}, {"en": "- Do you guys live around here? - Don't answer that! Did you see that light? He was trying to signal the Fire Navy.", "jp": "- （アング）君たちはこの近くに住んでいるの？ - （ソッカ）答えるな！ カタラ、あの光を見たろ？ こいつは『火の国の海軍』に合図（シグナル）を送ろうとしてたんだ。", "note": "signal（動詞：合図を送る）。ソッカはアングを火の国のスパイだと疑ってかかっています。"}, {"en": "I'm sure he's a spy for the Fire Navy. You can tell by that evil look in his eye.", "jp": "火の国のスパイに違いない。その証拠に、ほら、目に邪悪な光が宿っているだろ。", "note": "アングがキラキラした無垢な目でソッカを見つめているため、ソッカの「邪悪な目（evil look）」という主張は全く説得力がなく、お笑いシーンになっています。"}, {"en": "- The paranoid one is my brother, Sokka. You never told us your name. - I'm... I'm Aang.", "jp": "- （カタラ）この被害妄想が激しい（偏執病的な）のが私の兄、ソッカよ。ところで、まだ名前を教えてもらってないわ。 - （アング）僕は…僕はアングだよ。", "note": "paranoid（形容詞：被害妄想の、疑心暗鬼の）は、ソッカの過剰な警戒心をからかうカタラの辛口な表現。中級学習者にとって非常に豊かなボキャブラリーです。"}, {"en": "- You just sneezed and flew ten feet in the air! - Really? It felt higher than that.", "jp": "- （ソッカ）お前、今くしゃみをして空中に10フィート（約3メートル）も飛び上がったぞ！ - （アング）本当に？ 僕的にはもっと高く飛んだ気がしたけどな。", "note": "アングが大きなくしゃみをした弾みで、風の力（エアベンディング）により空中高く舞い上がります。アングはそれを当然のように受け止めています。"}, {"en": "- You're an Airbender! - Sure am!", "jp": "- （カタラ）あなた、気のベンダー（エアベンダー）なのね！ - （アング）もちろんそうさ！", "note": "Sure am! は I sure am! の I が省略された非常にカジュアルな返答。「いかにもその通り！」というニュアンス。"}, {"en": "Giant light beams, flying bison, Airbenders. I think I got midnight sun madness. I'm going home, where stuff makes sense.", "jp": "巨大な光の柱に、空飛ぶバイソン、そしてエアベンダーだと。どうやら俺は『白夜の狂気（極地特有の錯乱）』にかかっちまったらしい。まともな常識（筋が通る世界）が通用する家に帰るぞ。", "note": "midnight sun madness は、極地で太陽が沈まない「白夜（midnight sun）」のせいで頭がおかしくなること。make sense は「理にかなう、意味が通じる」という日常会話の超重要表現。"}, {"en": "- If you are stuck, Appa and I can give you a lift. - We'd love a ride! Thanks!", "jp": "- （アング）もし（流氷から動けなくて）困っているなら、僕とアッパが乗せていってあげるよ。 - （カタラ）ぜひ乗せてほしいわ！ ありがとう！", "note": "be stuck は「行き詰まる、動けない」。give A a lift は「Aを（乗り物などに）乗せてあげる、送ってあげる」という日常頻出表現。"}, {"en": "Oh, no, I am not getting on that fluffy snot monster.", "jp": "おい、冗談だろ。俺はあんな毛むくじゃらの『鼻水モンスター』になんか絶対乗らないからな。", "note": "get on は「（電車や動物などに）乗る」。fluffy（ふわふわした、毛むくじゃらの）と、アッパのくしゃみを根に持った snot（鼻水）を組み合わせた悪口。"}, {"en": "Are you hoping some other monster will come along and give you a ride home? You know, before you freeze to death?", "jp": "じゃあ、他のモンスターがやってきて、家まで乗せていってくれるのを待つわけ？ ほら、凍死しちゃう前にさ。", "note": "come along は「（都合よく）現れる、やってくる」。freeze to death は「凍死する」という表現。カタラの強烈な正論にソッカはぐうの音も出ません。"}, {"en": "Okay, first-time flyers, hold on tight! Appa, yip, yip!", "jp": "よし、初めて空を飛ぶみんな、しっかり掴まってて！ アッパ、ヤップ、ヤップ（進め）！", "note": "first-time flyers（初めて飛ぶ人たち）。hold on tight は「しっかり掴まる」。yip, yip はアングがアッパに飛ぶように命じる独特の合図の言葉。"}, {"en": "- Come on, Appa! Yip, yip! - Wow! That was truly amazing.", "jp": "- （アング）頼むよアッパ！ ヤップ、ヤップ！ - （カタラ）わあ！ 本当にすごかったわ（飛ぼうとして大きくジャンプしたアッパを見て）。", "note": "アッパはまだ病み上がりのため、飛ぶことができず、ただ海を泳いで進みます。カタラはアッパの跳躍力だけでも感動しています。"}, {"en": "- Appa's just tired. Some rest and hell be soaring through the sky. You'll see. - Why are you smiling at me like that?", "jp": "- （アング）アッパはちょっと疲れてるだけなんだ。少し休めば、空を高く舞い上がるようになるよ。今に見てて。 - （カタラ）ねえ、どうしてそんな風に私のことを見て笑っているの？", "note": "soar は「空高く舞い上がる、滑空する」という美しい動詞。アングが嬉しそうにカタラを見つめているので、カタラが少し照れて聞いています。"}, {"en": "Oh, I was smiling?", "jp": "えっ、僕、笑ってた？", "note": "アングの純粋な、少し恋心の混じった無自覚なスマイルです。"}, {"en": "I'm going to bed, now. Yep. A man needs his rest.", "jp": "俺はもう寝るぞ。そうさ、男には十分な休息が必要なんだ。", "note": "アッパの背中の上でふてくされながら、男らしさをアピールしつつ寝ようとするソッカ。need one's rest（休息を必要とする）。"}, {"en": "Prince Zuko, you need some sleep.", "jp": "ズコ王子、お前には睡眠が必要じゃ。", "note": "場面がズコの船に切り替わります。アイローが徹夜で海を見張るズコを心配しています。"}, {"en": "Even if you are right, and the Avatar is alive, you won't find him.", "jp": "たとえお前の言う通りアバターが生きていたとしても、見つけることはできんよ。", "note": "Even if は「たとえ〜だとしても（仮定・譲歩）」を表す重要接続詞。"}, {"en": "Your father, grandfather, and great-grandfather, all tried and failed.", "jp": "お前の父親も、祖父も、そして曽祖父も、皆アバターを捕らえようと試みて、そして失敗したのじゃからな。", "note": "火の国の歴代の王たちが100年かけてアバターを見つけられなかった歴史を挙げています。"}, {"en": "Because their honor didn't hinge on the Avatar's capture. Mine does!", "jp": "なぜなら、彼らの名誉はアバターの捕獲にかかっていなかったからです。しかし、私の名誉はかかっている（捕らえるかどうかにすべてがかかっている）のです！", "note": "hinge on... は「〜次第である、〜にすべてがかかっている」という中級の超重要表現。ズコが国を追放され、名誉（honor）を回復するためにアバターを執拗に追う動機がここで明かされます。"}, {"en": "This coward's 100 years in hiding are over.", "jp": "この臆病者（アバター）が100年間隠れおおせていた日々も、今日で終わりだ。", "note": "coward は「臆病者」。ズコはアングが戦争から逃げて隠れていたと思い込んでいます。be over は「終わる」。"}, {"en": "- Hey! - Hey, what you thinking about?", "jp": "- （カタラ）ねえ！ - （アング）やあ、何を考えていたの？", "note": "夜、アッパの上でカタラがアングに話しかけます。what you thinking about? は口語で What are you thinking about? の are が省略された形。"}, {"en": "I guess I was wondering, your being an airbender and all, if you had any idea what happened to the Avatar.", "jp": "ちょっと気になっていたの。あなたが気のベンダーだったりすることだし、アバターに何が起きたのか、何か知っているんじゃないかって。", "note": "your being an airbender and all の and all は「〜だとかそういうことすべて」という意味の口語。wonder if... は「〜かしらと思う、気になっている」。"}, {"en": "- No. I didn't know him. I mean, I knew people that knew him, but I didn't. Sorry. - Okay. Just curious. Good night! - Sleep tight.", "jp": "- （アング）ううん、僕は彼のことは知らないな。彼を知っている人なら知っていたけど…でも僕は知らない。ごめんね。 - （カタラ）いいのよ、ただ好奇心で聞いたの。おやすみなさい！ - （アング）よく眠ってね（おやすみ）。", "note": "アングは少し視線をそらし、何かを隠すように答えています（彼自身がアバターであることをまだ言い出せない）。Sleep tight は「ぐっすり眠ってね」という、おやすみの定番親密表現。"}, {"en": "- Aang! Wake up! It's okay. We're in the village. Come on, get ready. Everyone's waiting to meet you. - (Aang sneezes)", "jp": "- （カタラ）アング！ 起きて！ 大丈夫、私たちの村に着いたわよ。さあ、準備して。みんなあなたに会うのを待ってるわ。 - （アングがくしゃみをする）", "note": "朝、南気部族の小さな村に到着。アングが寝ぼけまなこで起きます。"}, {"en": "Aang, this is the entire village. Entire village... Aang!", "jp": "アング、これが村の全員よ。みんな…こちらがアングよ！", "note": "村には女性と小さな子供、お年寄りしかいません（大人の男性は皆、戦争に行っているため）。"}, {"en": "- Why are they all looking at me like that? Did Appa sneeze on me? - Well, no one has seen an Airbender in a hundred years. We thought they were extinct, until my grandchildren found you.", "jp": "- （アング）何でみんなそんな風に僕を見るの？ アッパが僕の上にまたくしゃみでもしたのかな？ - （グラン・グラン）まあね、100年の間、誰も気のベンダー（エアベンダー）なんて見たことがなかったんだよ。あの子たちがあなたを見つけるまでは、みんな絶滅した（滅ぼされた）と思っていたんだ。", "note": "村の長老である祖母（グラン・グラン）が説明します。extinct（形容詞：絶滅した、死に絶えた）は中級〜上級の極めて重要な単語。アングはここで「絶滅」という言葉を初めて聞き、ショックを受けます。"}, {"en": "- Extinct? - Aang, this is my grandmother. Call me gran-gran.", "jp": "- （アング）絶滅…？ - （カタラ）アング、こちらが私のおばあちゃんよ。/（祖母）グラン・グランと呼びなさい。", "note": "アングの戸惑いをよそに、グラン・グランはソッカの持っていたアングのグライダー（杖）を手に取ります。"}, {"en": "- What is this, a weapon? You can't stab anything with this. - It's not for stabbing. It's for airbending.", "jp": "- （ソッカ）何だこれ、武器か？ こんなんじゃ誰も突き刺す（攻撃する）ことなんかできないぞ。 - （アング）突き刺すためのものじゃないよ。これはエアベンディング（風曲げ）用の道具なんだ。", "note": "ソッカはあらゆる物を武器や防衛手段として見る現実主義者。アングはそれを優しく否定します。stab は「突き刺す、刺す」。"}, {"en": "- Magic trick! Do it again! - Not magic. Airbending. It lets me control the currents, around my glider, and fly.", "jp": "- （子供たち）手品だ！ もう一回やって！ - （アング）手品（マジック）じゃないよ。エアベンディング。これを使って、グライダーの周りの気流（風の流れ）をコントロールして飛ぶんだ。", "note": "current は「（空気や水の）流れ、気流、海流」。"}, {"en": "You know, last time I checked, humans can't fly!", "jp": "あのな、俺が最後に確認した限りじゃ、人間は空を飛べないはずだけどな！", "note": "Last time I checked は「私の知る限りでは、確か〜のはずだが」と、相手のあり得ない主張を皮肉混じりに否定する口語の定番表現。"}, {"en": "Check again!", "jp": "じゃあ、もう一回確認しなよ！", "note": "アングはグライダーを広げて一気に空へ飛び立ちます。"}, {"en": "- He's flying! - He's amazing! - My watchtower!", "jp": "- （子供たち）飛んでる！ すごい！ - （ソッカ）ああっ、俺の見張り塔が！", "note": "アングは見事に空を舞いますが、着陸時にソッカが苦労して雪で作った「見張り塔（watchtower）」に激突して崩してしまいます。コメディ的な展開。"}, {"en": "That was amazing!", "jp": "今の、本当に素晴らしかったわ！", "note": "カタラはアングの飛びっぷりに目を輝かせています。"}, {"en": "- You're an Airbender. Katara's a Waterbender. Together, you can waste time, all day long. - You're a Waterbender! - Well, sort of. Not yet.", "jp": "- （ソッカ）お前はエアベンダー。で、カタラはウォーターベンダー。二人揃って、一日中ダラダラと時間を無駄にすればいいさ。 - （アング）えっ、君ウォーターベンダー（水曲げ）なの？！ - （カタラ）まあ、そんな感じ（一応そう）だけど…、まだちゃんとは使えないの。", "note": "waste time（時間を浪費する、無駄にする）。sort of は「まあ、そんな感じ、多少はね」という、はっきりYES/NOと言えないときの口語表現。カタラは独学なのでまだ技をマスターしていません。"}, {"en": "- All right, no more playing. Come on, Katara. You have chores. - I told you, he's the real thing, gran-gran. I finally found a bender to teach me.", "jp": "- （グラン・グラン）よし、遊ぶのはここまで。おいで、カタラ。家の手伝い（雑用）があるよ。 - （カタラ）言ったでしょ、おばあちゃん、彼は本物（the real thing）なのよ！ ついに私に（水曲げを）教えてくれるベンダーが見つかったの！", "note": "chores（家事、雑用）は日常生活の定番単語。the real thing は「本物、まやかしではないもの」という重要表現。"}, {"en": "- Katara, try not to put all your hopes in this boy. - But he's special! I can tell. I sense, he's filled with much wisdom.", "jp": "- （グラン・グラン）カタラ、この少年にすべての希望を託し（期待し）すぎないようにしなさい。 - （カタラ）でも彼は特別よ！ 私にはわかるの。彼にはたくさんの知恵（wisdom）が詰まっていると感じるわ。", "note": "put all one's hopes in...（〜にすべての望みをかける）。祖母は現実的に、アングがただの子供であることを見抜いています。カタラは「彼は知恵に満ちている（filled with much wisdom）」と主張しますが、その直後アングはおバカな行動をします。"}, {"en": "See? Now, my tongue is stuck on like that.", "jp": "見て！ 舌が張り付いて取れなくなっちゃった！", "note": "アングが氷の柱にふざけて舌をくっつけ、凍りついて身動きが取れなくなっているコメディシーン。カタラの「知恵に満ちている」という評価とのギャップが秀逸。be stuck on... は「〜に張り付いて取れない」。"}, {"en": "- Again! - No, power in firebending comes from the breath, not the muscles. The breath becomes energy in the body. The energy extends past your limbs and becomes fire!", "jp": "- （ズコ）もう一回だ！ - （アイロー）いや、ファイアベンディング（火曲げ）の力は呼吸から生まれるのじゃ、筋肉からではない。呼吸が体内でエネルギーへと変わる。そのエネルギーが手足（四肢）を越えて伸び、火となるのじゃ！", "note": "ズコが兵士たちを相手に激しい特訓をしています。アイローが「力むな、呼吸が大事だ」と基本を説いています。limbs（手足、四肢）は中級の語彙。"}, {"en": "- Get it right this time. - Enough! I've been drilling this sequence, all day. Teach me the next, I'm ready.", "jp": "- （アイロー）今度は正しくやりなさい。 - （ズコ）もう十分だ！ 私はこの一連の動作（シーケンス）を一日中、反復練習（ドリル）してきたんだ。次の技を教えてくれ、私はもう準備ができている！", "note": "Get it right（正しくやる、成功させる）。drill（動詞：〜を繰り返し練習する）。sequence（一連の手順、動作）。ズコは焦りから、基本の反復練習に飽きて次の段階に進みたがっています。"}, {"en": "No, you are impatient. You have, yet, to master your basics. Drill it again!", "jp": "ダメじゃ、お前は気が短すぎる（辛抱が足りない）。お前は、まだ基本（basics）をマスターしておらん。もう一回反復練習じゃ！", "note": "impatient（形容詞：気の短い、焦っている、辛抱のない）は重要ボキャブラリー。have yet to + 動詞の原形 は「まだ〜していない、これから〜しなければならない」という中級最重要の文法表現。"}, {"en": "The sages tell us that the Avatar is the last airbender. He must be over a hundred years old, by now. He's had a century to master the elements. I'll need more than basic firebending to defeat him. You will teach me the advanced set!", "jp": "賢者たち（ sages ）の話では、アバターは最後のエアベンダーだ。今や100歳を超えているはずだ。彼にはエレメントをマスターするための時間が100年（1世紀）もあったのだ。奴を倒すには、ファイアベンディングの基本以上の力が必要だ。私に上級の型（advanced set）を教えるのだ！", "note": "sage は「賢者、賢人」。must be は「〜に違いない（強い推量）」。advanced は「上級の、高度な」。ズコは、アバターが100年間修行を積んだ強力な武芸者だと思い込んで恐れ、焦っています（実際のアングは100年間ただ凍っていた子供ですが、ズコはそれを知りません）。"}, {"en": "Very well. But first, I must finish my roast duck.", "jp": "よかろう。だがその前に、わしはこの「ローストダック（鴨のロースト）」を食べ終えねばならんのじゃ。", "note": "殺気立つズコを、美味しい食べ物（ローストダック）を理由に、のらりくらりとかわすアイローのユーモラスなオチです。"}, {"en": "Men, it's important that you show no fear when you face a Firebender. In the Water Tribe, we fight to the last man standing.", "jp": "諸君（男たちよ）、火のベンダーと対峙するときには、決して恐れを見せないことが重要だ。水気部族において、俺たちは最後の1人が立つまで戦うのだ！", "note": "ソッカが村の小さな子供たちを集めて「戦士の心構え」を熱く語っています。子供たちは全くついていけていません。the last man standing（最後に立っている一人、最後まで生き残る者）。"}, {"en": "- For without courage, how can we call ourselves men? - I gotta pee.", "jp": "- （ソッカ）なぜなら、勇気がなければ、どうして俺たちを「男」と呼べようか？ - （子供）おしっこ行きたい。", "note": "For... は理由を表す「というのも〜だからだ」という少し硬い表現。子供の I gotta pee（おしっこしたい、gotta = have got to）でソッカの熱い演説が台無しになります。"}, {"en": "- Until your fathers return from the war, they're counting on you to be the men. And that means, no potty breaks! - But I really gotta go. - Okay, who else has to go?", "jp": "- （ソッカ）父親たちが戦争から帰るまで、彼らはお前たちが「男」として村を守ることを期待している（当てにしている）んだ。つまり、おしっこ休憩（potty break）はナシだ！ - （子供）でも本当に漏れそうなんだもん。 - （ソッカ）……よし、他にトイレに行きたいやつは？（全員が手を挙げる）", "note": "count on A to do は「Aが〜することを期待する、当てにする」。potty break は「（幼児向けの）おトイレ休憩」。ソッカはがっくりきて全員に許可を出します。"}, {"en": "- Have you seen Aang? Gran-gran said he disappeared, over an hour ago. - (Sokka points to a snow pile where Aang is upside down)", "jp": "- （カタラ）アングを見なかった？ おばあちゃんが、1時間以上前に彼がいなくなったって言ってたの。 - （ソッカがアングのいる雪山を黙って指さす）", "note": "アングは雪山に頭から突っ込んで足だけを上に出して遊んでいます。"}, {"en": "- Everything freezes in there. Katara, get him out of here! This lesson is for warriors only. - (Aang triggers a snowball fight, kids laugh)", "jp": "- （ソッカ）そんなところにいたら全部凍りついちまうぞ。カタラ、こいつをどこかへ連れていけ！ この授業は「戦士（warrior）」のためだけのものだ。 - （アングが雪を投げて雪合戦が始まり、子供たちが大喜びする）", "note": "ソッカの厳しい特訓を、アングが一瞬で楽しい雪合戦の遊びに変えてしまい、子供たちに大人気になります。"}, {"en": "Stop! Stop it, right now! What's wrong with you? We don't have time for fun with a war going on.", "jp": "やめろ！ 今すぐやめろ！ お前らどうかしてるぞ！ 戦争が起きているっていうのに、遊んでいる（楽しむ）時間なんてないんだ！", "note": "What's wrong with you? は「（怒りを込めて）どうしちゃったんだ？、お前おかしいんじゃないか？」。with a war going on は「戦争が進行している状況で（付帯状況のwith）」。ソッカの真剣な訴えです。"}, {"en": "- What war? - What are you talking about? Are you kidding? - (Aang spots a penguin) Penguin!", "jp": "- （アング）え、戦争って何の？ - （ソッカ）何を言ってるんだ？ 冗談だろ？！ - （アング）ペンギンだーー！", "note": "戦争という概念そのものを知らないようなアングの態度にソッカは唖然としますが、アングはペンギンを見つけると話を途中で遮って追いかけていってしまいます。Are you kidding? は「からかっているのか？冗談だろ？」。"}, {"en": "- He's kidding, right? - Aang!", "jp": "- （ソッカ）あいつ、冗談で言ってるんだよな…？ - （カタラ）アング！（追いかける）", "note": "ソッカはアングの世間知らずぶりにドン引きしています。"}, {"en": "- Hey, come on, little guy. Wanna go sledding? - (Penguin runs away) - I have a way with animals.", "jp": "- （アング）ヘイ、おいで、可愛い子ちゃん。一緒にスライディング（滑り）しない？ - （ペンギンは逃げる） - 僕、動物の扱い（手懐け方）には自信があるんだよね。", "note": "I have a way with... は「〜の扱いが上手い、〜に好かれやすい」という重要フレーズ。ペンギンに逃げられているのにこう言い放つ、アングのユーモラスな強がりです。"}, {"en": "- Aang, I'll help you catch a penguin, if you teach me waterbending. - You got a deal! Just, one little problem. I'm an Airbender, not a Waterbender. Can't anyone in your tribe teach you?", "jp": "- （カタラ）アング、水曲げを教えてくれるなら、ペンギンを捕まえるのを手伝ってあげるわ。 - （アング）取引成立（決まり）だ！ ただ、一つ小さな問題があるんだ。僕はエアベンダーで、ウォーターベンダーじゃない。君の部族の誰か教えてくれる人はいないの？", "note": "You got a deal! は「取引成立だ！」「それで手を打とう！」という日常交渉の超定番フレーズ。"}, {"en": "- No. You're looking at the only Waterbender in the whole South Pole. - This isn't right. A Waterbender needs to master water. What about the North Pole? There's another Water Tribe up there. Maybe, their Waterbenders can teach you.", "jp": "- （カタラ）いないの。あなたが今見ているのが、南極（South Pole）全体で唯一のウォーターベンダーなのよ。 - （アング）それはおかしい（良くない）よ。ウォーターベンダーは水をマスターしなきゃ。北極（North Pole）はどう？ あっちにももう一つの水気部族があるよね。たぶん、あそこのウォーターベンダーなら教えてくれるよ。", "note": "You're looking at... は「今あなたが目の前にしているのが〜だ（私自身だ）」という自己言及表現。アングは離れた北極の部族なら教え手がいるはずだと提案します。"}, {"en": "Maybe. We haven't had contact with our sister tribe in a long time. It's not exactly turn right at the second glacier. It's on the other side of the world!", "jp": "たぶんね。でも、私たちの姉妹部族（北極）とは長い間、連絡を取っていないの。「2つ目の氷河を右に曲がる」みたいに簡単に行ける場所じゃないわ。世界の反対側にあるのよ！", "note": "have contact with...（〜と連絡・接触を取る）。It's not exactly turn right at the second glacier は「2つ目の氷河を右折するみたいに簡単に行けるような場所じゃない」という、カタラによるちょっとした地理的な皮肉混じりのジョーク。"}, {"en": "- But you forget, I have a flying bison! We can personally fly you to the North Pole! Katara, we're going to find you a master. - That's... I mean, I don't know. I've never left home before.", "jp": "- （アング）でも忘れないで、僕には空飛ぶバイソンがいる！ 僕たちが直々に、君を北極まで乗せて飛んでいけるよ！ カタラ、君の先生（マスター）を一緒に探しに行こう。 - （カタラ）それは…、でも、どうかしら。私、今まで一度も家（故郷）を離れたことがないのよ。", "note": "personally は「個人的に、直々に、自ら」。アングの頼もしい提案に、カタラは喜びつつも、未知の世界への一歩に戸惑っています。"}, {"en": "Well, you think about it. In the meantime, can you teach me how to catch these penguins?", "jp": "まあ、ゆっくり考えてみてよ。それはそうと（その間に）、このペンギンたちの捕まえ方を教えてくれる？", "note": "In the meantime は「とりあえずその間に、そうしている間に」という日常で非常によく使う中級句。アングの、相手を急かさない優しさが出ています。"}, {"en": "Okay. Listen closely, my young pupil. Catching penguins is an ancient and sacred art. Observe.", "jp": "わかったわ。よく聞きなさい、若き弟子よ。ペンギン捕りというのは、古代から伝わる神聖な芸術（art）なの。よく観察するのよ。", "note": "pupil は「生徒、弟子」。sacred は「神聖な」。カタラはアングをおちょくるように、大げさに「神聖な芸術（sacred art）」と呼んで手本を見せます。手本の中身は「魚を投げてペンギンを釣る」という超シンプルなもので、アングは大笑いします。"}, {"en": "- I haven't done this, since I was a kid. - You still are a kid!", "jp": "- （アング）これやるの、子供のとき以来だよ。（ペンギンの背中に乗って氷の上を爆走中） - （カタラ）あなた、今でも子供じゃない！", "note": "アングが「子供の頃以来だ」と懐かしがりますが、カタラはすかさず「あなた今も子供（12歳）でしょ！」と突っ込みます。100年の時間のずれを予感させる小さな伏線。"}, {"en": "- What is that? - A Fire Navy ship... and a very bad memory for my people.", "jp": "- （アング）あれは何？（氷に半分埋まった巨大な鉄の廃船を見つけて） - （カタラ）火の国の海軍の軍艦よ…、そして、私たちの部族にとって、とても悲しい（最悪な）記憶の象徴なの。", "note": "南極に座礁して残された火の国の古い軍艦。a very bad memory は直訳すると「とても悪い思い出」ですが、文脈的には「部族にとっての痛ましい戦争の傷跡」を意味します。"}, {"en": "- Aang, stop! We're not allowed to go near it. The ship could be booby-trapped. - If you want to be a bender, you have to let go of fear.", "jp": "- （カタラ）アング、やめて！ 近づいちゃダメよ。その船には罠（ブービートラップ）が仕掛けられているかもしれないわ。 - （アング）もしベンダーになりたいなら、恐怖心を捨て去らなきゃ（解き放たなきゃ）ダメだよ。", "note": "be allowed to... は「〜することを許されている」。booby-trapped は「（引っかかると作動する）罠が仕掛けられた」。let go of... は「〜を捨てる、手放す」という非常に美しい日常英語表現。"}, {"en": "- It has haunted my tribe, since gran-gran was a little girl. It was part of the Fire Nation's first attacks. - Okay, backup. I have friends all over the world, even in the Fire Nation. I've never seen any war.", "jp": "- （カタラ）あのおばあちゃん（グラン・グラン）が小さな女の子だった頃から、この船は私たちの部族を苦しめ（付きまとい）続けているの。火の国の最初の襲撃の痕跡なのよ。 - （アング）よし、ちょっと待って（巻き戻して）。僕は世界中に友達がいるよ、火の国にだって。戦争なんて一度も見たことないよ。", "note": "haunt は「（幽霊などが）取り憑く、つきまとう」または「（嫌な思い出が）脳裏を離れない、苦しめ続ける」。backup は「少し話を巻き戻して、待って」という、相手の急な話を整理させるときの非常にカジュアルな口語。"}, {"en": "- Aang, how long were you in that iceberg? - I don't know. A few days, maybe? - I think, it was more like a hundred years.", "jp": "- （カタラ）アング、あなたあの氷山の中にどのくらいいたの？ - （アング）わからない。2、3日くらい、かな？ - （カタラ）私、それは『100年』くらいだったんだと思うわ。", "note": "more like は「（数値を修正して）むしろ〜に近い、むしろ〜のようだ」という意味の中級重要イディオム。"}, {"en": "- What? That's impossible. Do I look like a 112 year-old man to you? - Think about it. The war is a century-old. You don't know about it because... somehow, you were in there that whole time. It's the only explanation.", "jp": "- （アング）えっ？ そんなのあり得ないよ。僕が112歳のおじいさんに見える？ - （カタラ）考えてみて。この戦争は1世紀（100年）も続いているの。あなたが戦争を知らないのは…、どういうわけか、その間ずっと氷の中にいたからよ。それしか説明がつかないわ（唯一の説明よ）。", "note": "Do I look like A to you? は「私があなたにAのように見えますか？（そんなわけないだろ）」。a century-old（1世紀に及ぶ、100年前からの）。explanation は「説明、釈明」。アングに冷酷な現実が突きつけられます。"}, {"en": "- A hundred years. I can't believe it. - I'm sorry, Aang.", "jp": "- （アング）100年…。信じられないよ。 - （カタラ）ごめんね、アング（ショックを受けるアングを気遣って）。", "note": "アングは、自分が眠っている間に、自分の愛した気の民や友達が皆いなくなってしまったかもしれないという凄まじい現実に直面し、呆然とします。"}, {"en": "- Maybe, somehow, there's a bright side to all this. I did get to meet you. - Come on, let's get out of here. - Aang, let's head back. This place is creepy.", "jp": "- （アング）でも、もしかしたら、このすべての出来事にも良い面（bright side）があるかもしれない。だって、君に出会えたんだから。 - （アング）さあ、ここを出よう。 - （カタラ）アング、戻りましょう。ここ、なんだか不気味（creepy）だわ。", "note": "bright side は「（悪い状況下での）明るい兆し、ポジティブな面」。アングの類い稀なるポジティブさと、カタラへの好意が示される非常に美しいセリフです。creepy は「不気味な、気味の悪い」という口語頻出単語。"}, {"en": "- What's that you said about booby traps? - Hold on tight.", "jp": "- （アング）さっき、罠（ブービートラップ）がどうとかって、何て言ってたっけ？（罠のセンサーを踏んでしまい、船から信号弾が発射されて焦るアング） - （アング）しっかり掴まって！（カタラを抱えて風曲げで脱出する準備）", "note": "アングがうっかり罠を起動してしまい、火の国の軍艦から夜空に向けて赤いシグナル（信号弾）が打ち上がります。これを遠くで見張っていたズコが目撃します。"}, {"en": "The last Airbender. Quite agile, for his old age. Wake my uncle! Tell him... I found the Avatar, as well as his hiding place.", "jp": "最後のエアベンダーめ。その高齢の割には、ずいぶんと素早い（身軽な）動きをするな。叔父上を起こせ！ そして伝えろ…、ついにアバターを発見した、奴の隠れ場所（村）も一緒にな、と。", "note": "agile（形容詞：身軽な、俊敏な）は中〜上級の英単語。ズコは「アバターは100歳を超える老人」だと思い込んでいるため、アングがアクロバティックに脱出する姿を見て「歳の割にはすばしっこい」と勘違いしている面白いセリフです。hiding place は「隠れ家、潜伏先」。"}];
+ 
+// --- 状態管理 ---
+ // ！！ここから変更：ストレージからデータを読み込む仕組みを追加！！
+ const savedStates = localStorage.getItem('avatar_audio_states');
+ 
+ let cardStates = savedStates ? JSON.parse(savedStates) : cardsData.map(() => ({
+ isCorrect: false,
+ lastAnsweredDate: null
+ }));
+
+ let displayIndices = cardsData.map((_, i) => i);
+ let currentDisplayIndex = 0;
+ 
+ // ！！ここから変更：保存された正解数から再開するように修正！！
+ let correctCount = cardStates.filter(state => state.isCorrect).length;
+ 
+ let isFront = true;
+ let isFilterMode = false;
+
+ // --- DOM要素 ---
+ const frontSide = document.getElementById('front-side');
+ const backSide = document.getElementById('back-side');
+ const engContent = document.getElementById('eng-content');
+ const japContent = document.getElementById('jap-content');
+ const noteContent = document.getElementById('note-content');
+ 
+const controlsFront = document.getElementById('controls-front');
+ const controlsBack = document.getElementById('controls-back');
+ const progressText = document.getElementById('progress-text');
+ const scoreText = document.getElementById('score-text');
+ const playBtn = document.getElementById('play-audio-btn');
+ const prevBtn = document.getElementById('prev-btn');
+ const modeBtn = document.getElementById('mode-btn');
+ const lastDateText = document.getElementById('last-date-text');
+
+ // ！！ここから追加：データを保存する関数！！
+ function saveProgress() {
+   localStorage.setItem('avatar_audio_states', JSON.stringify(cardStates));
+ }
+
+ // --- UIの更新 ---
+ function updateUI() {
+ if (displayIndices.length === 0) return;
+
+ const originalIndex = displayIndices[currentDisplayIndex];
+ const card = cardsData[originalIndex];
+ const state = cardStates[originalIndex];
+
+ progressText.textContent = `${currentDisplayIndex + 1} / ${displayIndices.length}`;
+ scoreText.textContent = `正解数: ${correctCount} / ${cardsData.length}`;
+ 
+ prevBtn.disabled = (currentDisplayIndex === 0);
+
+ if (isFront) {
+ frontSide.style.display = 'flex';
+ backSide.style.display = 'none';
+ controlsFront.style.display = 'flex';
+ controlsBack.style.display = 'none';
+ 
+ if (state.lastAnsweredDate) {
+ lastDateText.textContent = `最終回答日: ${state.lastAnsweredDate}`;
+ } else {
+ lastDateText.textContent = "最終回答日: 未回答";
+ }
+ } else {
+ frontSide.style.display = 'none';
+ backSide.style.display = 'block';
+ controlsFront.style.display = 'none';
+ controlsBack.style.display = 'flex';
+ }
+
+ engContent.textContent = card.en;
+ japContent.textContent = card.jp;
+ noteContent.textContent = "💡 " + card.note;
+ }
+
+ // --- アクション ---
+ function flipCard() {
+ isFront = !isFront;
+ updateUI();
+ }
+
+ function nextCard() {
+ if (currentDisplayIndex < displayIndices.length - 1) {
+ currentDisplayIndex++;
+ } else {
+ if (isFilterMode) {
+ refreshFilterIndices();
+ if (displayIndices.length === 0) return;
+ }
+ currentDisplayIndex = 0;
+ }
+ isFront = true;
+ updateUI();
+ }
+
+ function prevCard() {
+ if (currentDisplayIndex > 0) {
+ currentDisplayIndex--;
+ isFront = true;
+ updateUI();
+ }
+ }
+
+ function goToFirst() {
+ currentDisplayIndex = 0;
+ isFront = true;
+ updateUI();
+ }
+
+ // --- 日付の記録 ---
+ function getTodayFormatted() {
+ const today = new Date();
+ const y = today.getFullYear();
+ const m = String(today.getMonth() + 1).padStart(2, '0');
+ const d = String(today.getDate()).padStart(2, '0');
+ return `${y}/${m}/${d}`;
+ }
+
+ function recordDate(index) {
+ cardStates[index].lastAnsweredDate = getTodayFormatted();
+ }
+
+ // --- 正解・不正解の評価 ---
+ function markCorrect() {
+ const originalIndex = displayIndices[currentDisplayIndex];
+ 
+ if (!cardStates[originalIndex].isCorrect) {
+ cardStates[originalIndex].isCorrect = true;
+ correctCount++;
+ }
+ 
+ recordDate(originalIndex);
+ saveProgress(); // ！！ここで保存！！
+ nextCard();
+ }
+
+ function markIncorrect() {
+ const originalIndex = displayIndices[currentDisplayIndex];
+ 
+ if (cardStates[originalIndex].isCorrect) {
+ cardStates[originalIndex].isCorrect = false;
+ correctCount--;
+ }
+ 
+ recordDate(originalIndex);
+ saveProgress(); // ！！ここで保存！！
+ nextCard();
+ }
+
+ // --- モード切替とフィルター処理 ---
+ function toggleFilterMode() {
+ isFilterMode = !isFilterMode;
+ 
+ if (isFilterMode) {
+ refreshFilterIndices();
+ } else {
+ displayIndices = cardsData.map((_, i) => i);
+ modeBtn.textContent = "全問モード中 (タップで未正解のみ)";
+ modeBtn.style.backgroundColor = "#edf2f7";
+ currentDisplayIndex = 0;
+ isFront = true;
+ updateUI();
+ }
+ }
+
+ function refreshFilterIndices() {
+ const uncorrectIndices = cardStates
+ .map((state, index) => state.isCorrect ? -1 : index)
+ .filter(index => index !== -1);
+ 
+ if (uncorrectIndices.length === 0) {
+ alert("すごい！全てのカードに正解しているから、全問モードに戻すね。");
+ isFilterMode = false;
+ displayIndices = cardsData.map((_, i) => i);
+ modeBtn.textContent = "全問モード中 (タップで未正解のみ)";
+ modeBtn.style.backgroundColor = "#edf2f7";
+ } else {
+ displayIndices = uncorrectIndices;
+ modeBtn.textContent = "未正解モード中 (タップで全問)";
+ modeBtn.style.backgroundColor = "#fefcbf";
+ }
+ 
+ currentDisplayIndex = 0;
+ isFront = true;
+ updateUI();
+ }
+
+ // --- 音声再生 ---
+ function speakText() {
+ const originalIndex = displayIndices[currentDisplayIndex];
+ const textToSpeak = cardsData[originalIndex].en;
+ 
+ window.speechSynthesis.cancel();
+ const utterance = new SpeechSynthesisUtterance(textToSpeak);
+ utterance.lang = 'en-US';
+ utterance.rate = 0.9;
+ window.speechSynthesis.speak(utterance);
+ }
+
+ playBtn.addEventListener('click', speakText);
+
+ // 初期化実行
+ updateUI();
+ </script>
+</body>
+</html>
